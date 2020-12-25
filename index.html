@@ -23,7 +23,7 @@
         width: 100%;
         max-width: 600px;
         object-fit: contain;
-        margin: 1em 0;
+        margin: 2em 0 1em;
       }
 
       main {
@@ -38,6 +38,13 @@
       main > #price-diff {
         font-size: 5em;
         margin: 10px 0;
+        margin-left: -5px;
+      }
+
+      footer {
+        font-style: italic;
+        font-size: 1.2em;
+        margin-top: 1em;
       }
 
       @media only screen and (max-width: 600px) {
@@ -65,6 +72,7 @@
       <img src="https://i.imgur.com/gJWT3Yj.png" />
       <h2 id="current-price"></h2>
       <h3 id="price-diff"></h3>
+      <footer>From, Brad & Caitlin</footer>
     </main>
 
     <script type="text/javascript">
@@ -78,7 +86,7 @@
           document.getElementById("current-price").innerText = "$" + currentPrice.toFixed(2);
 
           const priceDiffElement = document.getElementById("price-diff");
-          priceDiffElement.innerText = `${positiveGain ? "+" : "-"} $${priceDiff.toFixed(2)}`;
+          priceDiffElement.innerText = `${positiveGain ? "+" : "-"}$${priceDiff.toFixed(2)}`;
           if (positiveGain) {
             priceDiffElement.setAttribute("style", "color: green");
           } else {
