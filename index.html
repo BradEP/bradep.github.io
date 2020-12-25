@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Merry Christmas!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        text-align: center;
+        font-family: "Trebuchet MS";
+        margin: 0;
+      }
+
+      header h1 {
+        font-size: 3em;
+        background-color: green;
+        color: white;
+        padding: 0.5em;
+        margin: 0;
+      }
+
+      main > img {
+        width: 100%;
+        max-width: 600px;
+        object-fit: contain;
+        margin: 1em 0;
+      }
+
+      main {
+        height: 60vh;
+      }
+
+      main > #current-price {
+        font-size: 7em;
+        margin: 10px 0;
+      }
+
+      main > #price-diff {
+        font-size: 5em;
+        margin: 10px 0;
+      }
+
+      @media only screen and (max-width: 600px) {
+        main > #current-price {
+          font-size: 5em;
+        }
+
+        main > #price-diff {
+          font-size: 4em;
+        }
+      }
+
+      @media only screen and (min-width: 601px) {
+        header {
+          grid-template-columns: 50% 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Merry Christmas!</h1>
+    </header>
+    <main>
+      <img src="https://i.imgur.com/gJWT3Yj.png" />
+      <h2 id="current-price"></h2>
+      <h3 id="price-diff"></h3>
+    </main>
+
+    <script type="text/javascript">
+      fetch("https://api.coindesk.com/v1/bpi/currentprice.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const currentPrice = data.bpi.USD.rate_float * 0.00125;
+          const priceDiff = currentPrice - 25;
+          const positiveGain = priceDiff > 0;
+
+          document.getElementById("current-price").innerText = "$" + currentPrice.toFixed(2);
+
+          const priceDiffElement = document.getElementById("price-diff");
+          priceDiffElement.innerText = `${positiveGain ? "+" : "-"} $${priceDiff.toFixed(2)}`;
+          if (positiveGain) {
+            priceDiffElement.setAttribute("style", "color: green");
+          } else {
+            priceDiffElement.setAttribute("style", "color: red");
+          }
+        });
+    </script>
+  </body>
+</html>
