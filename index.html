@@ -17,49 +17,72 @@
         color: white;
         padding: 0.5em;
         margin: 0;
+        margin-bottom: 0.5em;
       }
 
-      main > img {
+      main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 70vh;
+      }
+
+      main > div {
+        width: 90%;
+        margin-bottom: 1em;
+      }
+
+      main img {
         width: 100%;
-        max-width: 600px;
+        max-width: 700px;
         object-fit: contain;
         margin: 2em 0 1em;
       }
 
-      main {
-        height: 60vh;
-      }
-
-      main > #current-price {
-        font-size: 7em;
+      #current-price,
+      #current-price-eth {
+        font-size: 6em;
         margin: 10px 0;
       }
 
-      main > #price-diff {
+      #price-diff,
+      #price-diff-eth {
         font-size: 5em;
         margin: 10px 0;
-        margin-left: -5px;
       }
 
-      footer {
-        font-style: italic;
-        font-size: 1.2em;
-        margin-top: 1em;
-      }
-
-      @media only screen and (max-width: 600px) {
-        main > #current-price {
-          font-size: 5em;
-        }
-
-        main > #price-diff {
-          font-size: 4em;
-        }
-      }
-
+      /* Desktop and larger screens */
       @media only screen and (min-width: 601px) {
-        header {
-          grid-template-columns: 50% 50%;
+        main {
+          flex-direction: row;
+        }
+        main > div {
+          width: 45%;
+        }
+      }
+
+      /* Mobile screens */
+      @media only screen and (max-width: 600px) {
+        header h1 {
+          font-size: 2em;
+          padding: 0.25em;
+        }
+
+        main img {
+          max-width: 200px;
+          margin: 0.5em;
+        }
+
+        #current-price,
+        #current-price-eth {
+          font-size: 2.5em;
+          margin: 5px 0;
+        }
+
+        #price-diff,
+        #price-diff-eth {
+          font-size: 2em;
+          margin: 5px 0;
         }
       }
     </style>
@@ -69,30 +92,62 @@
       <h1>Merry Christmas!</h1>
     </header>
     <main>
-      <img src="https://i.imgur.com/gJWT3Yj.png" />
-      <h2 id="current-price"></h2>
-      <h3 id="price-diff"></h3>
-      <footer>Love, Brad & Caitlin</footer>
+      <div id="btc">
+        <img src="https://i.imgur.com/gJWT3Yj.png" />
+        <h2 id="current-price"></h2>
+        <h3 id="price-diff"></h3>
+      </div>
+      <div id="eth">
+        <img src="https://i.imgur.com/64gHbrt.png" />
+        <h2 id="current-price-eth"></h2>
+        <h3 id="price-diff-eth"></h3>
+      </div>
     </main>
 
     <script type="text/javascript">
-      fetch("https://api.coindesk.com/v1/bpi/currentprice.json")
-        .then((response) => response.json())
+      const initialInvestment = 25;
+      const btcAmount = 0.00125;
+      const ethAmount = 0.00625;
+
+      const currentPriceUrl =
+        "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd";
+
+      fetch(currentPriceUrl)
+        .then((res) => res.json())
         .then((data) => {
-          const currentPrice = data.bpi.USD.rate_float * 0.00125;
-          const priceDiff = currentPrice - 25;
-          const positiveGain = priceDiff > 0;
+          // Bitcoin calculation
+          const currentBtcValue = data.bitcoin.usd * btcAmount;
+          const btcPriceDiff = currentBtcValue - initialInvestment;
+          const btcPositiveGain = btcPriceDiff > 0;
 
-          document.getElementById("current-price").innerText = "$" + currentPrice.toFixed(2);
+          document.getElementById("current-price").innerText = "$" + currentBtcValue.toFixed(2);
+          const btcPriceDiffElement = document.getElementById("price-diff");
+          btcPriceDiffElement.innerText = `${btcPositiveGain ? "+" : "-"}$${Math.abs(
+            btcPriceDiff
+          ).toFixed(2)}`;
+          btcPriceDiffElement.setAttribute("style", `color: ${btcPositiveGain ? "green" : "red"}`);
 
-          const priceDiffElement = document.getElementById("price-diff");
-          priceDiffElement.innerText = `${positiveGain ? "+" : "-"}$${priceDiff.toFixed(2)}`;
-          if (positiveGain) {
-            priceDiffElement.setAttribute("style", "color: green");
-          } else {
-            priceDiffElement.setAttribute("style", "color: red");
-          }
+          // Ethereum calculation
+          const currentEthValue = data.ethereum.usd * ethAmount;
+          const ethPriceDiff = currentEthValue - initialInvestment;
+          const ethPositiveGain = ethPriceDiff > 0;
+
+          document.getElementById("current-price-eth").innerText = "$" + currentEthValue.toFixed(2);
+          const ethPriceDiffElement = document.getElementById("price-diff-eth");
+          ethPriceDiffElement.innerText = `${ethPositiveGain ? "+" : "-"}$${Math.abs(
+            ethPriceDiff
+          ).toFixed(2)}`;
+          ethPriceDiffElement.setAttribute("style", `color: ${ethPositiveGain ? "green" : "red"}`);
+        })
+        .catch((error) => {
+          console.error("Error fetching crypto data:", error);
+          const mainElement = document.querySelector("main");
+          const errorElement = document.createElement("p");
+          errorElement.innerText = "Could not load cryptocurrency data. Please try again later.";
+          errorElement.style.color = "red";
+          mainElement.appendChild(errorElement);
         });
     </script>
   </body>
 </html>
+
